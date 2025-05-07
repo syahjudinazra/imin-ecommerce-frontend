@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --primary-color: #9a9a9a;
+  --secondary-color: #000000;
+  --background-color: #f2f0f1;
+  --text-color: #000000;
+}
+
+body {
+  font-family: "Roboto", "Poppins", sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Roboto", sans-serif;
+}
+
+p,
+span {
+  font-family: "Poppins", sans-serif;
+}
