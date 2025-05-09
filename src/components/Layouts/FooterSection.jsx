@@ -4,10 +4,10 @@ const Footer = () => {
   return (
     <footer className="bg-gray-100 -mt-24 py-12">
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 mt-32 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 mt-32 md:grid-cols-5 gap-8 ml-4">
           {/* Logo and Tagline Section */}
           <div className="md:col-span-1">
-            <div className="mb-4">
+            <div className="mb-8">
               <Logo />
             </div>
             <p className="text-gray-600 text-sm mb-6">

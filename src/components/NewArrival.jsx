@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, EffectFade } from "swiper/modules";
+import { Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 // Product Card Component
-const ProductCard = ({ product, expanded, onToggleExpand }) => {
+const ProductCard = ({ product }) => {
   const {
-    id,
     name,
     image,
     rating,
@@ -17,35 +16,19 @@ const ProductCard = ({ product, expanded, onToggleExpand }) => {
     currentPrice,
     originalPrice,
     discount,
-    description,
-    features,
   } = product;
 
-  const handleClick = () => {
-    onToggleExpand(id);
-  };
-
   return (
-    <div
-      className={`flex flex-col bg-gray-100 rounded-lg overflow-hidden transition-all duration-300 ${
-        expanded ? "shadow-xl" : "shadow-md hover:shadow-lg"
-      }`}
-      onClick={handleClick}
-    >
-      <div
-        className={`relative ${
-          expanded ? "h-48" : "h-40"
-        } flex items-center justify-center p-4`}
-      >
-        <img src={image} alt={name} className="mt-20 object-contain" />
-        {discount && (
-          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
-            -{discount}%
+    <div className="px-4">
+      <div className="bg-gray-100 h-72 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
+        <div className="flex flex-col rounded-lg overflow-hidden transition-all duration-300">
+          <div className={`relative flex items-center justify-center p-4`}>
+            <img src={image} alt={name} className="object-contain" />
           </div>
-        )}
+        </div>
       </div>
-      <div className="p-4">
-        <h3 className="text-sm font-medium">{name}</h3>
+      <div className="mt-4">
+        <h3 className="text-2xl font-medium">{name}</h3>
         <div className="flex items-center mt-1">
           {/* Rating Stars */}
           <div className="flex">
@@ -77,46 +60,6 @@ const ProductCard = ({ product, expanded, onToggleExpand }) => {
             </>
           )}
         </div>
-
-        {/* Expanded content */}
-        {expanded && (
-          <div className="mt-4 space-y-3 animate-fadeIn">
-            <p className="text-sm text-gray-700">{description}</p>
-
-            {features && features.length > 0 && (
-              <div>
-                <h4 className="font-medium text-sm mb-1">Features:</h4>
-                <ul className="text-sm text-gray-700 pl-5 list-disc">
-                  {features.map((feature, index) => (
-                    <li key={index}>{feature}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="pt-2 flex space-x-2">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium flex-1">
-                Add to Cart
-              </button>
-              <button className="border border-gray-300 hover:bg-gray-100 px-3 py-2 rounded-md">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
@@ -140,7 +83,7 @@ const ProductSection = ({ title, products, loading }) => {
 
   return (
     <div className="mb-12">
-      <h2 className="text-2xl font-bold text-center mb-6">{title}</h2>
+      <h2 className="text-4xl font-extrabold text-center p-14">{title}</h2>
 
       {loading ? (
         <div className="text-center py-12">
@@ -151,10 +94,9 @@ const ProductSection = ({ title, products, loading }) => {
         <>
           <div className="relative px-4">
             <Swiper
-              modules={[Navigation, Pagination, EffectFade]}
+              modules={[Pagination, EffectFade]}
               spaceBetween={16}
               slidesPerView={1}
-              navigation
               pagination={{ clickable: true }}
               onSwiper={setSwiperInstance}
               breakpoints={{
@@ -185,9 +127,12 @@ const ProductSection = ({ title, products, loading }) => {
             </Swiper>
           </div>
           <div className="text-center mt-8">
-            <button className="bg-transparent hover:bg-gray-900 text-black hover:text-white px-16 py-2 border border-gray-500 hover:border-transparent rounded-full text-sm font-medium transition-colors">
+            <a
+              href="/category-list"
+              className="bg-transparent hover:bg-gray-900 text-black hover:text-white px-16 py-2 border border-gray-500 hover:border-transparent rounded-full text-sm font-medium transition-colors"
+            >
               View All
-            </button>
+            </a>
           </div>
           <hr className="my-6 mt-14 border-gray-300" />
         </>
@@ -358,8 +303,6 @@ const NewArrival = () => {
         products={newArrivals}
         loading={loading}
       />
-
-      {/* You can add more sections here, like "Best Sellers", "On Sale", etc. */}
     </div>
   );
 };

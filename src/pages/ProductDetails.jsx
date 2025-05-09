@@ -5,27 +5,28 @@ import ReferenceProduct from "../components/ReferenceProduct";
 
 export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState("brown");
+  const [selectedColor, setSelectedColor] = useState("red");
   const [selectedSize, setSelectedSize] = useState("Large");
   const [activeTab, setActiveTab] = useState("rating");
   const [quantity, setQuantity] = useState(1);
 
   // Product images
   const images = [
-    "/api/placeholder/300/300",
-    "/api/placeholder/300/300",
-    "/api/placeholder/300/300",
+    "/src/assets/images/swift-2-details.png",
+    "/src/assets/images/back-swift-2-details.png",
+    "/src/assets/images/dock-swift-2-details.png",
+    "/src/assets/images/open-swift-2-details.png",
   ];
 
   // Product colors
   const colors = [
-    { id: "brown", bg: "bg-amber-800" },
-    { id: "teal", bg: "bg-teal-800" },
-    { id: "navy", bg: "bg-navy-800" },
+    { id: "red", bg: "bg-red-500" },
+    { id: "black", bg: "bg-gray-900" },
+    { id: "white", bg: "bg-gray-300" },
   ];
 
   // Product sizes
-  const sizes = ["Small", "Medium", "Large", "X-Large"];
+  const sizes = ["4/64", "4/128", "8/128", "8/256"];
 
   // Reviews data
   const reviews = [
@@ -126,27 +127,27 @@ export default function ProductDetails() {
                   <div
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`w-20 h-20 border rounded cursor-pointer ${
+                    className={`w-20 h-24 bg-gray-100 border rounded-2xl cursor-pointer ${
                       selectedImage === index
-                        ? "border-blue-500"
+                        ? "border-gray-500"
                         : "border-gray-200"
                     }`}
                   >
                     <img
                       src={img}
                       alt={`Product thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      className="object-contain"
                     />
                   </div>
                 ))}
               </div>
 
               {/* Main Image */}
-              <div className="flex-1 border border-blue-500 rounded">
+              <div className="flex-1 border border-gray-500 rounded-4xl overflow-hidden">
                 <img
                   src={images[selectedImage]}
                   alt="Product main view"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
               </div>
             </div>
@@ -166,16 +167,15 @@ export default function ProductDetails() {
             <div className="flex items-center mt-4">
               <span className="text-2xl font-bold">$260</span>
               <span className="ml-2 text-gray-500 line-through">$300</span>
-              <span className="ml-2 bg-red-100 text-red-600 px-2 py-1 text-xs font-medium rounded">
+              <span className="ml-2 bg-red-100 text-red-600 px-2 py-1 text-xs font-medium rounded-full">
                 -40%
               </span>
             </div>
 
             {/* Description */}
             <p className="mt-4 text-gray-600">
-              The graphic t-shirt which is perfect for any occasion. Crafted
-              from a soft and breathable fabric, it offers superior comfort and
-              style.
+              The Swift 2 is built for speed, reaching up to 80 mph with
+              precision controls for racing enthusiasts.
             </p>
 
             {/* Color Selection */}
@@ -204,7 +204,7 @@ export default function ProductDetails() {
 
             {/* Size Selection */}
             <div className="mt-6">
-              <h3 className="text-sm text-gray-700 mb-2">Choose Size</h3>
+              <h3 className="text-sm text-gray-700 mb-2">Choose Storage</h3>
               <div className="flex gap-2">
                 {sizes.map((size) => (
                   <button
@@ -254,10 +254,10 @@ export default function ProductDetails() {
 
         {/* Tabs */}
         <div className="mt-12 border-b border-gray-200">
-          <div className="flex space-x-8">
+          <div className="flex space-x-8 justify-center">
             <button
               onClick={() => setActiveTab("details")}
-              className={`pb-4 text-sm font-medium ${
+              className={`w-lg pb-4 text-xl font-medium ${
                 activeTab === "details"
                   ? "border-b-2 border-gray-900 text-gray-900"
                   : "text-gray-500 hover:text-gray-700"
@@ -267,7 +267,7 @@ export default function ProductDetails() {
             </button>
             <button
               onClick={() => setActiveTab("rating")}
-              className={`pb-4 text-sm font-medium ${
+              className={`w-lg pb-4 text-xl font-medium ${
                 activeTab === "rating"
                   ? "border-b-2 border-gray-900 text-gray-900"
                   : "text-gray-500 hover:text-gray-700"
@@ -277,7 +277,7 @@ export default function ProductDetails() {
             </button>
             <button
               onClick={() => setActiveTab("faqs")}
-              className={`pb-4 text-sm font-medium ${
+              className={`w-lg pb-4 text-xl font-medium ${
                 activeTab === "faqs"
                   ? "border-b-2 border-gray-900 text-gray-900"
                   : "text-gray-500 hover:text-gray-700"

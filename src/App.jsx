@@ -10,6 +10,8 @@ import CustomerReviews from "./components/CustomerReviews";
 import BannerOffering from "./components/Navbar/BannerOffering";
 import Footer from "./components/Layouts/FooterSection";
 import ProductDetails from "./pages/ProductDetails";
+import CategoryPage from "./pages/CategoryPage";
+import WhatsappFloating from "./components/Buttons/WhatsappFloating";
 
 // Homepage component to contain all the sections of the home page
 const HomePage = () => {
@@ -27,8 +29,6 @@ const HomePage = () => {
       <CategoriesSection />
       {/* Customer Reviews */}
       <CustomerReviews />
-      {/* Banner Offering */}
-      <BannerOffering />
     </>
   );
 };
@@ -43,8 +43,11 @@ function App() {
         {/* Home route */}
         <Route path="/" element={<HomePage />} />
 
-        {/* Product details route with dynamic parameter */}
+        {/* Product details route  */}
         <Route path="/product/:productId" element={<ProductDetails />} />
+
+        {/* Category Route */}
+        <Route path="/category-list" element={<CategoryPage />} />
 
         {/* Other routes */}
         <Route
@@ -96,7 +99,11 @@ function App() {
           }
         />
       </Routes>
+      {/* WhatsApp Floating Button */}
+      <WhatsappFloating />
 
+      {/* Banner appears on all pages */}
+      <BannerOffering />
       {/* Footer appears on all pages */}
       <Footer />
     </Router>

@@ -32,8 +32,8 @@ export default function CategoriesSection() {
   };
 
   return (
-    <div className="container mx-auto bg-gray-100 rounded-xl p-6">
-      <h2 className="text-center text-2xl font-bold mb-6">
+    <div className="container mx-auto bg-gray-100 rounded-xl p-14">
+      <h2 className="text-center text-4xl font-extrabold mb-12">
         BROWSE BY CATEGORIES
       </h2>
       <div className="grid grid-flow-row-dense grid-cols-1 md:grid-cols-3 gap-4">

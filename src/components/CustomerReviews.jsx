@@ -93,10 +93,10 @@ export default function CustomerReviews() {
   );
 
   return (
-    <div className="container mx-auto py-12">
+    <div className="container mx-auto py-18">
       <div className=" mx-auto">
-        <div className="flex justify-between items-center mb-10">
-          <h2 className="text-3xl font-bold tracking-tight">
+        <div className="flex justify-between items-center my-12">
+          <h2 className="text-4xl font-extrabold tracking-tight">
             OUR HAPPY CUSTOMERS
           </h2>
           <div className="flex space-x-4">

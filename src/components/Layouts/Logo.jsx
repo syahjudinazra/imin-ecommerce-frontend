@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Logo() {
   return (
-    <div className="w-full">
+    <div className="w-full -m-4">
       <img
         src="/src/assets/images/iMin-logo.webp"
         alt="iMin Logo"
