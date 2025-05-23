@@ -5,6 +5,7 @@ import { Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+import { apiService } from "../services/api"; // Import the API service
 
 // Product Card Component
 const ProductCard = ({ product }) => {
@@ -16,6 +17,7 @@ const ProductCard = ({ product }) => {
     currentPrice,
     originalPrice,
     discount,
+    category,
   } = product;
 
   return (
@@ -29,7 +31,12 @@ const ProductCard = ({ product }) => {
       </div>
       <div className="mt-4">
         <h3 className="text-2xl font-medium">{name}</h3>
-        <div className="flex items-center mt-1">
+        {product.category && (
+          <p className="text-sm text-gray-600 mt-1 font-medium">
+            {product.category.name || product.category}
+          </p>
+        )}
+        <div className="flex items-center mt-2">
           {/* Rating Stars */}
           <div className="flex">
             {[...Array(5)].map((_, i) => (
@@ -66,7 +73,7 @@ const ProductCard = ({ product }) => {
 };
 
 // Section Component
-const ProductSection = ({ title, products, loading }) => {
+const ProductSection = ({ title, products, loading, error }) => {
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [swiperInstance, setSwiperInstance] = useState(null);
 
@@ -89,6 +96,62 @@ const ProductSection = ({ title, products, loading }) => {
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
           <p className="mt-2">Loading products...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-12">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+            <div className="flex items-center justify-center mb-4">
+              <svg
+                className="h-12 w-12 text-red-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-red-800 mb-2">
+              Error Loading Products
+            </h3>
+            <p className="text-sm text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center py-12">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
+            <div className="flex items-center justify-center mb-4">
+              <svg
+                className="h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2"
+                />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-800 mb-2">
+              No Products Found
+            </h3>
+            <p className="text-sm text-gray-600">
+              No new arrivals are currently available.
+            </p>
+          </div>
         </div>
       ) : (
         <>
@@ -144,119 +207,108 @@ const ProductSection = ({ title, products, loading }) => {
 // Main E-commerce Component
 const NewArrival = () => {
   const [newArrivals, setNewArrivals] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Enhanced dummy data with descriptions and features
-  const dummyNewArrivals = [
-    {
-      id: 1,
-      name: "Falcon 2",
-      image: "/src/assets/images/falcon-2.png",
-      rating: 4.5,
-      reviewCount: "49",
-      currentPrice: 120,
-      originalPrice: null,
-      discount: null,
-      description:
-        "The Falcon 2 is our latest compact drone featuring 4K video recording and a 30-minute flight time.",
-      features: [
-        "4K Ultra HD Camera",
-        "30-minute flight time",
-        "Obstacle avoidance",
-        "Follow-me mode",
-      ],
-    },
-    {
-      id: 2,
-      name: "Swan 1",
-      image: "/src/assets/images/swan-1.png",
-      rating: 3.5,
-      reviewCount: "35",
-      currentPrice: 240,
-      originalPrice: 320,
-      discount: 25,
-      description:
-        "The Swan 1 is our waterproof drone that can land and take off from water surfaces.",
-      features: [
-        "Waterproof design",
-        "Floats on water",
-        "1080p HD Camera",
-        "25-minute flight time",
-      ],
-    },
-    {
-      id: 3,
-      name: "Swift 2",
-      image: "/src/assets/images/swift-2.png",
-      rating: 4.5,
-      reviewCount: "45",
-      currentPrice: 180,
-      originalPrice: null,
-      discount: null,
-      description:
-        "The Swift 2 is built for speed, reaching up to 80 mph with precision controls for racing enthusiasts.",
-      features: [
-        "Top speed: 80 mph",
-        "Carbon fiber frame",
-        "Racing controller",
-        "FPV compatibility",
-      ],
-    },
-    {
-      id: 4,
-      name: "Lark 1",
-      image: "/src/assets/images/lark-1.png",
-      rating: 5.0,
-      reviewCount: "78",
-      currentPrice: 350,
-      originalPrice: 400,
-      discount: 12,
-      description:
-        "The Eagle Pro is designed for professional photographers with a stabilized gimbal and high-quality sensor.",
-      features: [
-        "3-axis gimbal stabilization",
-        "1-inch CMOS sensor",
-        "RAW photo format",
-        "45-minute flight time",
-      ],
-    },
-    {
-      id: 5,
-      name: "Lark 1",
-      image: "/src/assets/images/lark-1.png",
-      rating: 5.0,
-      reviewCount: "78",
-      currentPrice: 350,
-      originalPrice: 400,
-      discount: 12,
-      description:
-        "The Eagle Pro is designed for professional photographers with a stabilized gimbal and high-quality sensor.",
-      features: [
-        "3-axis gimbal stabilization",
-        "1-inch CMOS sensor",
-        "RAW photo format",
-        "45-minute flight time",
-      ],
-    },
-  ];
-
-  // Simulating API call
+  // Fetch products from API
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
+    const fetchNewArrivals = async () => {
       try {
-        // Using dummy data with a simulated delay
-        setTimeout(() => {
-          setNewArrivals(dummyNewArrivals);
-          setLoading(false);
-        }, 800); // Simulate network delay
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        setLoading(true);
+        setError(null);
+
+        // Call the API service
+        const response = await apiService.getNewArrivals();
+
+        console.log("API Response:", response); // Debug log to see the actual response structure
+
+        // Handle different possible response structures
+        let productsArray = [];
+
+        if (Array.isArray(response)) {
+          // Response is directly an array
+          productsArray = response;
+        } else if (response && Array.isArray(response.data)) {
+          // Response has data property with array
+          productsArray = response.data;
+        } else if (response && Array.isArray(response.products)) {
+          // Response has products property with array
+          productsArray = response.products;
+        } else if (response && Array.isArray(response.items)) {
+          // Response has items property with array
+          productsArray = response.items;
+        } else if (response && Array.isArray(response.results)) {
+          // Response has results property with array
+          productsArray = response.results;
+        } else {
+          console.error("Unexpected API response structure:", response);
+          throw new Error("Invalid data format received from API");
+        }
+
+        // Validate that we have an array
+        if (!Array.isArray(productsArray)) {
+          throw new Error("Products data is not in the expected array format");
+        }
+
+        // Transform the API data to match your component structure
+        const transformedData = productsArray.map((product) => ({
+          id:
+            product.id ||
+            product._id ||
+            Math.random().toString(36).substr(2, 9),
+          name:
+            product.name ||
+            product.title ||
+            product.productName ||
+            "Unnamed Product",
+          image:
+            product.image ||
+            product.imageUrl ||
+            product.thumbnail ||
+            product.photo ||
+            "/placeholder-image.jpg",
+          rating: Number(product.rating) || Number(product.averageRating) || 0,
+          reviewCount: String(
+            product.reviewCount ||
+              product.reviews ||
+              product.totalReviews ||
+              "0"
+          ),
+          currentPrice: Number(
+            product.currentPrice || product.price || product.salePrice || 0
+          ),
+          originalPrice:
+            product.originalPrice ||
+            product.oldPrice ||
+            product.regularPrice ||
+            null,
+          discount:
+            product.discount ||
+            product.discountPercentage ||
+            product.discountPercent ||
+            null,
+          description: product.description || product.desc || "",
+          features: product.features || product.specifications || [],
+          category: product.category || product.categoryName || null,
+        }));
+
+        console.log("Transformed data:", transformedData); // Debug log
+        setNewArrivals(transformedData);
+      } catch (err) {
+        console.error("Failed to fetch new arrivals:", err);
+        setError(
+          err.message || "Failed to load products. Please try again later."
+        );
+
+        // Optional: Set fallback dummy data for development/testing
+        // You can uncomment this line to use dummy data while debugging
+        // setNewArrivals(dummyNewArrivals);
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    fetchNewArrivals();
   }, []);
 
   return (
@@ -302,6 +354,7 @@ const NewArrival = () => {
         title="NEW ARRIVALS"
         products={newArrivals}
         loading={loading}
+        error={error}
       />
     </div>
   );
