@@ -1,16 +1,27 @@
-//api.js
 import axios from "axios";
 
-// Create axios instance with base configuration
+const BASE_API_URL = "http://127.0.0.1:8000/api";
+const BASE_IMAGE_URL = "http://127.0.0.1:8000";
+
+const token = localStorage.getItem("token") || "";
+
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api", // Replace with your actual API base URL
-  timeout: 10000, // 10 seconds timeout
+  baseURL: BASE_API_URL,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
-    // Add any other default headers you need
-    // 'Authorization': 'Bearer your-token-here',
+    Authorization: `Bearer ${token}`,
   },
 });
+
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "";
+  if (typeof imagePath !== "string") return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+  return `${BASE_IMAGE_URL}${imagePath}`;
+};
 
 // Request interceptor - runs before every request
 api.interceptors.request.use(
@@ -51,8 +62,9 @@ export const endpoints = {
   newArrivals: "/products/new-arrivals",
   products: "/products",
   categories: "/categories",
-  reviews: "/reviews", // Added reviews endpoint
-  productReviews: "/products/{id}/reviews", // Reviews for specific product
+  reviews: "/reviews",
+  reviewDetail: "/reviews/{id}",
+  productReviews: "/products/{id}/reviews",
 };
 
 // API functions
@@ -81,28 +93,41 @@ export const apiService = {
   getProductById: async (id) => {
     try {
       const response = await api.get(`${endpoints.products}/${id}`);
-      return response.data.data;
+      return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch product ${id}: ${error.message}`);
     }
   },
 
-  // Fetch all reviews
+  // Fetch all reviews with optional filters
   getReviews: async (params = {}) => {
     try {
       const response = await api.get(endpoints.reviews, { params });
-      return response.data.data || response.data;
+      return response.data;
     } catch (error) {
       throw new Error(`Failed to fetch reviews: ${error.message}`);
     }
   },
 
-  // Fetch reviews for specific product
+  // NEW: Fetch detailed review by ID
+  getReviewDetail: async (reviewId) => {
+    try {
+      const url = endpoints.reviewDetail.replace("{id}", reviewId);
+      const response = await api.get(url);
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        `Failed to fetch review detail ${reviewId}: ${error.message}`
+      );
+    }
+  },
+
+  // Fetch reviews for specific product with statistics
   getProductReviews: async (productId, params = {}) => {
     try {
       const url = endpoints.productReviews.replace("{id}", productId);
       const response = await api.get(url, { params });
-      return response.data.data || response.data;
+      return response.data.data;
     } catch (error) {
       throw new Error(
         `Failed to fetch reviews for product ${productId}: ${error.message}`
@@ -146,4 +171,4 @@ export const apiService = {
   // Add more API functions as needed
 };
 
-export default api;
+export { api, BASE_IMAGE_URL, getImageUrl };

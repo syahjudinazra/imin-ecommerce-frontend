@@ -24,6 +24,7 @@ export default function CategoryPage() {
   });
 
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [selectedColor, setSelectedColor] = useState("black");
 
   const toggleFilter = (filter) => {
     setExpandedFilters({
@@ -31,6 +32,13 @@ export default function CategoryPage() {
       [filter]: !expandedFilters[filter],
     });
   };
+
+  // Product colors
+  const colors = [
+    { id: "red", bg: "bg-red-500" },
+    { id: "black", bg: "bg-gray-900" },
+    { id: "white", bg: "bg-gray-300" },
+  ];
 
   const products = [
     {
@@ -287,8 +295,23 @@ export default function CategoryPage() {
 
                 {expandedFilters.colors && (
                   <div className="mt-2 flex gap-2">
-                    <button className="w-8 h-8 rounded-full bg-black ring-2 ring-offset-2 ring-black"></button>
-                    <button className="w-8 h-8 rounded-full bg-white border border-gray-300"></button>
+                    {colors.map((color) => (
+                      <button
+                        key={color.id}
+                        onClick={() => setSelectedColor(color.id)}
+                        className={`w-8 h-8 rounded-full ${
+                          color.bg
+                        } flex items-center justify-center ${
+                          selectedColor === color.id
+                            ? "ring-2 ring-offset-2 ring-gray-800"
+                            : ""
+                        }`}
+                      >
+                        {selectedColor === color.id && (
+                          <span className="text-white">✓</span>
+                        )}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>

@@ -12,6 +12,7 @@ import Footer from "./components/Layouts/FooterSection";
 import ProductDetails from "./pages/ProductDetails";
 import CategoryPage from "./pages/CategoryPage";
 import WhatsappFloating from "./components/Buttons/WhatsappFloating";
+import CartPage from "./pages/CartPage";
 
 // Homepage component to contain all the sections of the home page
 const HomePage = () => {
@@ -44,10 +45,13 @@ function App() {
         <Route path="/" element={<HomePage />} />
 
         {/* Product details route  */}
-        <Route path="/product/:productId" element={<ProductDetails />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
 
         {/* Category Route */}
         <Route path="/category-list" element={<CategoryPage />} />
+
+        {/* Cart Route} */}
+        <Route path="/cart" element={<CartPage />} />
 
         {/* Other routes */}
         <Route

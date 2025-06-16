@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../Layouts/Logo";
 import { MegaMenu } from "primereact/megamenu";
+import { useCart } from "../../context/CartContext";
 
 function MenuSection() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -9,6 +10,7 @@ function MenuSection() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const navRef = useRef(null);
+  const { cartCount } = useCart();
 
   // Check for mobile viewport on mount and window resize
   useEffect(() => {
@@ -236,7 +238,7 @@ function MenuSection() {
               </button>
 
               {/* Shopping Cart Icon */}
-              <Link to="/cart" className="p-1" aria-label="Cart">
+              <Link to="/cart" className="relative p-1" aria-label="Cart">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -251,6 +253,11 @@ function MenuSection() {
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
+                    {cartCount}
+                  </span>
+                )}
               </Link>
 
               {/* User Icon */}

@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, EffectFade } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
-import { apiService } from "../services/api"; // Import the API service
+import { apiService, getImageUrl } from "../services/api";
 
 // Product Card Component
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const {
+    id,
     name,
     image,
     rating,
@@ -17,20 +19,42 @@ const ProductCard = ({ product }) => {
     currentPrice,
     originalPrice,
     discount,
-    category,
   } = product;
+
+  // Handle click to navigate to product details
+  const handleProductClick = () => {
+    navigate(`/product/${id}`);
+  };
 
   return (
     <div className="px-4">
-      <div className="bg-gray-100 h-72 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
+      <div
+        className="bg-gray-100 h-72 rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105 cursor-pointer"
+        onClick={handleProductClick}
+      >
         <div className="flex flex-col rounded-lg overflow-hidden transition-all duration-300">
-          <div className={`relative flex items-center justify-center p-4`}>
-            <img src={image} alt={name} className="object-contain" />
+          <div
+            className={`relative flex items-center justify-center p-4 h-full`}
+          >
+            <img
+              src={getImageUrl(image)}
+              alt={name}
+              className="object-contain h-full w-full max-h-60"
+              onError={(e) => {
+                // Fallback image if the main image fails to load
+                e.target.src = "/placeholder-image.jpg";
+              }}
+            />
           </div>
         </div>
       </div>
       <div className="mt-4">
-        <h3 className="text-2xl font-medium">{name}</h3>
+        <h3
+          className="text-2xl font-medium cursor-pointer hover:text-gray-600 transition-colors"
+          onClick={handleProductClick}
+        >
+          {name}
+        </h3>
         {product.category && (
           <p className="text-sm text-gray-600 mt-1 font-medium">
             {product.category.name || product.category}
@@ -52,7 +76,7 @@ const ProductCard = ({ product }) => {
               </svg>
             ))}
           </div>
-          <span className="text-xs text-gray-500 ml-1">{reviewCount}</span>
+          <span className="text-xs text-gray-500 ml-1">({reviewCount})</span>
         </div>
         <div className="flex items-center mt-1">
           <span className="font-bold text-lg">${currentPrice}</span>
@@ -94,7 +118,7 @@ const ProductSection = ({ title, products, loading, error }) => {
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
           <p className="mt-2">Loading products...</p>
         </div>
       ) : error ? (
@@ -222,15 +246,15 @@ const NewArrival = () => {
 
         console.log("API Response:", response); // Debug log to see the actual response structure
 
-        // Handle different possible response structures
+        // Handle the Laravel response structure
         let productsArray = [];
 
-        if (Array.isArray(response)) {
-          // Response is directly an array
-          productsArray = response;
-        } else if (response && Array.isArray(response.data)) {
-          // Response has data property with array
+        // Based on your JSON structure, the products are in response.data
+        if (response && Array.isArray(response.data)) {
           productsArray = response.data;
+        } else if (Array.isArray(response)) {
+          // Direct array response
+          productsArray = response;
         } else if (response && Array.isArray(response.products)) {
           // Response has products property with array
           productsArray = response.products;
@@ -252,44 +276,27 @@ const NewArrival = () => {
 
         // Transform the API data to match your component structure
         const transformedData = productsArray.map((product) => ({
-          id:
-            product.id ||
-            product._id ||
-            Math.random().toString(36).substr(2, 9),
-          name:
-            product.name ||
-            product.title ||
-            product.productName ||
-            "Unnamed Product",
-          image:
-            product.image ||
-            product.imageUrl ||
-            product.thumbnail ||
-            product.photo ||
-            "/placeholder-image.jpg",
-          rating: Number(product.rating) || Number(product.averageRating) || 0,
-          reviewCount: String(
-            product.reviewCount ||
-              product.reviews ||
-              product.totalReviews ||
-              "0"
-          ),
-          currentPrice: Number(
-            product.currentPrice || product.price || product.salePrice || 0
-          ),
-          originalPrice:
-            product.originalPrice ||
-            product.oldPrice ||
-            product.regularPrice ||
-            null,
-          discount:
-            product.discount ||
-            product.discountPercentage ||
-            product.discountPercent ||
-            null,
-          description: product.description || product.desc || "",
-          features: product.features || product.specifications || [],
-          category: product.category || product.categoryName || null,
+          id: product.id,
+          name: product.name || "Unnamed Product",
+          image: product.image,
+          rating: 4.5,
+          reviewCount: "450",
+          currentPrice: parseFloat(product.price) || 0,
+          originalPrice: product.original_price
+            ? parseFloat(product.original_price)
+            : null,
+          discount: product.discount || null,
+          description: product.description || "",
+          category: product.category
+            ? {
+                id: product.category.id,
+                name: product.category.name,
+              }
+            : null,
+          slug: product.slug,
+          stock: product.stock,
+          created_at: product.created_at,
+          updated_at: product.updated_at,
         }));
 
         console.log("Transformed data:", transformedData); // Debug log
@@ -299,10 +306,6 @@ const NewArrival = () => {
         setError(
           err.message || "Failed to load products. Please try again later."
         );
-
-        // Optional: Set fallback dummy data for development/testing
-        // You can uncomment this line to use dummy data while debugging
-        // setNewArrivals(dummyNewArrivals);
       } finally {
         setLoading(false);
       }
